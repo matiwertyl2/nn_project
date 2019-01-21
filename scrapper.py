@@ -8,6 +8,7 @@ import ssl
 import json
 import time
 from pyvirtualdisplay import Display
+# Oprócz tego trzeba mieć geckodriver gdzieś w PATH https://github.com/mozilla/geckodriver/releases 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import os
