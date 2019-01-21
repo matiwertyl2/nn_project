@@ -90,6 +90,7 @@ class GoogleImageScraper:
                 break
         driver.close()
         driver.quit()
+        display.sendstop()
         return links
 
 data_path = 'data/'
