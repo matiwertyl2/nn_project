@@ -54,8 +54,51 @@ def rotate_image(input, angle, show=False):
         plt.show()
     return (img, np.insert(new_rect, 0,  data[0]))
 
+def translate_image(input, translate, show=False):
+    img = input[0]
+    plt.imshow(img)
+    data = input[1]
+    rect_coords = data[1:]
+    width, height = img.size
+
+    new_rect =  np.zeros(4)
+    print rect_coords[0], rect_coords[0] + float(translate[0]) / width
+    new_rect[0] = max(0., rect_coords[0] + float(translate[0]) / width)
+    new_rect[1] = min(1., rect_coords[1] + float(translate[0]) / width)
+    new_rect[2] = max(0., rect_coords[2] + float(translate[1]) / height)
+    new_rect[3] = min(1., rect_coords[3] + float(translate[1]) / height)
+    print new_rect
+    img = TF.affine(img, 0, translate, 1, 0)
+
+    if show:
+        draw = ImageDraw.Draw(img)
+        draw.rectangle(((new_rect[0]*width, new_rect[2]*height), (new_rect[1]*width, new_rect[3]*height)))
+        plt.imshow(img)
+        plt.show()
+
+    return (img, np.insert(new_rect, 0,  data[0]))
+
+def random_affine(input, angle, translate, show=False):
+    alpha = np.random.uniform(-angle, angle)
+    t = np.random.uniform(-translate, translate, 2)
+    rotated = rotate_image(input, alpha)
+    translated = translate_image(rotated, tuple(t))
+
+    if show:
+        img = translated[0]
+        coords = translated[1][1:]
+        width, height = img.size
+        draw = ImageDraw.Draw(img)
+        draw.rectangle(((coords[0]*width, coords[2]*height), (coords[1]*width, coords[3]*height)))
+        plt.imshow(img)
+        plt.show()
+
+    return translated
+
 #number = 1
 #img = Image.open('data/raw/' + str(number) + '.jpg')
 #rect_coords = [map(float, line.split(',')) for line in open('metadata.csv').read().splitlines()][number]
 #img, data = rotate_image((img, rect_coords), 20, show=True)
-#print data
+#translate_image((img, rect_coords), (50., 50.), show=True)
+
+#random_affine((img, rect_coords), 30, 30, show=True)
