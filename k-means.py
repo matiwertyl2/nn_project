@@ -1,8 +1,7 @@
 import numpy as np 
 
 def iou(boxes, centers):
-    # box [xmin, xmax, ymin, ymax]
-    # center tak samo
+    # box [width, height]
 
     interX = np.minimum(boxes[:, 0].reshape((-1, 1)), centers.T[0, :])
     interY = np.minimum(boxes[:, 1].reshape((-1, 1)), centers.T[1, :])
