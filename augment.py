@@ -34,9 +34,10 @@ def get_new_rect(corners, width, height):
     return np.array([xmin/width, xmax/width, ymin/height, ymax/height])
 
     
-def rotate_image(number, angle, show=False):
-    img = Image.open('data/raw/' + str(number) + '.jpg')
-    rect_coords = [map(float, line.split(',')) for line in open('metadata.csv').read().splitlines()][number][1:]
+def rotate_image(input, angle, show=False):
+    img = input[0]
+    data = input[1]
+    rect_coords = data[1:]
     width, height = img.size
 
     img = TF.rotate(img, angle)
@@ -51,7 +52,10 @@ def rotate_image(number, angle, show=False):
             draw_line(corners[i], corners[i-1])
         plt.imshow(img)
         plt.show()
-    return img, new_rect
+    return (img, np.insert(new_rect, 0,  data[0]))
 
-
-rotate_image(1, 20, show=True)
+#number = 1
+#img = Image.open('data/raw/' + str(number) + '.jpg')
+#rect_coords = [map(float, line.split(',')) for line in open('metadata.csv').read().splitlines()][number]
+#img, data = rotate_image((img, rect_coords), 20, show=True)
+#print data
