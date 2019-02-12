@@ -89,19 +89,19 @@ We decided to use a subset of Youtube-BoundingBoxes Dataset \cite{youtube-bb}. O
 \end{figure}
 
 
-\section{Training}
+\section*{Training}
 
 We took 8000 of the images of dogs from Youtube-BoundingBoxes Dataset and did traiditional train/test split. Then we used Adam as an optimizer. \\
 
-We optimize the weighted mean least squares error, as suggested in the paper \cite{yolo} \\
+We optimized the weighted mean least squares error, as suggested in the paper \cite{yolo} \\
 
-The error function is defined as:
+The error function was defined as:
 $$ 1 - IOU(predicted\_box, true\_box)$$
 where
 $$ IOU(A, B) = \frac{ A \cap B}{A \cup B} $$
 
 \subsection*{YOLO training}
-As a feature extractor we tried to use pretrained vgg and resnet50 networks. On top of that we added 2 fully connected layers and ReLU for nonlinerarity. For regularization we used drouput with $p = 0.5$. 
+As a feature extractor we tried to use pretrained vgg and resnet50 networks. On top of that we added 2 fully connected layers and ReLU for nonlinearity. For regularization we used drouput with $p = 0.5$. 
 
 \begin{figure}[H]
 	\begin{center}
@@ -113,7 +113,15 @@ As a feature extractor we tried to use pretrained vgg and resnet50 networks. On 
 
 \end{figure}
 
-We managed to train the network down to 25\% train error rate. However the test error rate has never been smaller than 65\%. We tried different configurations of hyperparameters, yet it did not improve the results. We decided to abandon the YOLO approach and move to the YOLO 9000.
+We managed to train the network down to 25\% train error rate. However the test error rate has never been smaller than 65\%. We tried different configurations of hyperparameters, adding noise to input values and data augmentation, yet it did not improve the results. We decided to abandon the YOLO approach and move to the YOLO 9000.
+
+\subsection*{YOLO 9000}
+
+\section*{Comparison with other methods}
+
+
+\section*{Conclusion}
+
 
 
 
