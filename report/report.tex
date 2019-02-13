@@ -117,7 +117,7 @@ where
 $$ IOU(A, B) = \frac{ A \cap B}{A \cup B} $$
 
 \subsection*{YOLO training}
-As a feature extractor we tried to use pretrained vgg and resnet50 networks. On top of that we added 2 fully connected layers and ReLU for nonlinearity. For regularization we used drouput with $p = 0.5$. 
+As a feature extractor we tried to use pretrained vgg and resnet50 networks. On top of that we added 2 fully connected layers and ReLU for nonlinearity. For regularization we used dropout with $p = 0.5$. 
 
 \begin{figure}[H]
 	\begin{center}
@@ -131,15 +131,38 @@ As a feature extractor we tried to use pretrained vgg and resnet50 networks. On 
 
 We managed to train the network down to 25\% train error rate. However the test error rate has never been smaller than 65\%. We tried different configurations of hyperparameters, adding noise to input values and data augmentation, yet it did not improve the results. We decided to abandon the YOLO approach and move to the YOLO 9000.
 
-\subsection*{YOLO 2}
+\subsection*{YOLO 2 training}
 
-\section*{Comparison with other methods}
+To get good anchor boxes, we ran K-means on bounding boxes from the dataset. However the closest centroid was chosen not by euclidean distance but by the best IOU score. 
+
+As a feature extractor we used again resnet50, but instead of fully connected layers, we added 4 convolutional layers on top of it. Each convolutional layer was followed by batch normalisation and ReLU.
+
+As a result we managed to reduce test error rate down to 48\% which we found satisfying.
 
 
 \section*{Conclusion}
 
+Although we did not achieve spectacular results, there are some interesting outcomes we noticed.
+
+Even though we trained the model on the dataset with only on dog per image, it is quite good at finding multiple dogs. If there are two or three dogs on the picture, then top 3 predictions find them. We present two examples below.
 
 
+\begin{figure}[H]
+
+\begin{minipage}{.4\textwidth}
+	\includegraphics[width=\textwidth]{many_detected1.png}
+\end{minipage}%
+\hfill
+\begin{minipage}{.4\textwidth}
+	\includegraphics[width=\textwidth]{many_detected2.png}
+\end{minipage}%
+\hfill
+
+\end{figure}
+
+We consider the failure with YOLO as our mistake. Maybe tuning the model could improve the results. However, it might have been the problem with the dataset quality as well.
+
+Using the anchor boxes int YOLO V2 significantly improves the learning. Intuitively, there are $B$ boxes in each grid cell, because we want to encourage each box to specialize to detect specific type of shape. If the model has good priors of these types, it only has to adjust the boxes, instead of learning from scratch.
 
 \newpage
 \begin{thebibliography}{9}
