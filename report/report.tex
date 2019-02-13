@@ -61,7 +61,7 @@
 
 \section*{Abstract}
 
-Object detection is a very rapidly evolving deep learning area and a wide variety of methods has been developed in recent years. Many of them suffer from a computation complexity (RCNN). In this paper we revisit YOLO \cite{yolo} and YOLO v2 (introduced in YOLO9000 paper \cite{yolo9000}) - fast real time object detection methods. Both of them are able to detect many classes of objects, however, we limit ourselves to detecting only one class - a dog. We then compare our results with the original ones and with other methods such as RCNN and Fast RCNN.
+Object detection is a very rapidly evolving deep learning area and a wide variety of methods has been developed in recent years. Many of them suffer from a computation complexity (RCNN). In this paper we revisit YOLO \cite{yolo} and YOLO v2 (introduced in YOLO9000 paper \cite{yolo9000}) - fast real time object detection methods. Both of them are able to detect many classes of objects, however, we limit ourselves to detecting only one class - a dog. We then compare both versions of YOLO to seek for any improvement.
 
 \section*{YOLO}
 
@@ -69,10 +69,14 @@ The YOLO method states detection as a linear regression problem straight from pi
 
 \section*{YOLO v2}
 
-The YOLO v2 is in fact the basic YOLO with several improvements. For example, the use of batch normalization on all convolutional layers in YOLO not only eliminates the need for other forms of regularisation, but also results in $2\%$ improvement in mAP. Further changes include higher resolution classifier (denser grid), use of anchor boxes and direct location prediction. \\
+The YOLO v2 is in fact the basic YOLO with several improvements. For example, the use of batch normalization on all convolutional layers in YOLO not only eliminates the need for other forms of regularisation (in theory), but also results in $2\%$ improvement in mAP. Further changes include higher resolution classifier (denser grid) and direct location prediction. \\
 The last improvement is very useful for dealing with initial instability. In region proposal networks the network predicts values $t_x$ and $t_y$ and the $(x,y)$ center coordinates are calculated as
-$$ x := (t_x \cdot w_a)-x_a $$
-$$ y := (t_y \cdot h_a)-y_a $$
+\begin{equation}
+\begin{aligned}
+x &:= (t_x \cdot w_a)-x_a \\
+y &:= (t_y \cdot h_a)-y_a
+\end{aligned}
+\end{equation}
 Since this formulation is unconstrained, any anchor box can end up at any point in the image. To overcome this drawback, we bound the location using logistic activation $\sigma$, which makes the value fall between $0$ to $1$:
 \begin{equation}
 \begin{aligned}
@@ -88,6 +92,7 @@ This technique results in $5\%$ increase in mAP over the version of anchor boxes
 
 \section*{Dataset}
 We decided to use a subset of Youtube-BoundingBoxes Dataset \cite{youtube-bb}. One can find there more than 200000 frames with dogs. The biggest disadvantage of this dataset is that only one object is detected in every frame. This can lead to some troubles with learning the model. The other problem is that some bounding boxes are set incorrectly. However, this can reduce overfitting during learning.
+Furthermore, we employed data augmentation, namely random translations (up to 25 px) and random rotations (up to 25 degrees).
 
 \begin{figure}[H]
 
@@ -107,7 +112,7 @@ We decided to use a subset of Youtube-BoundingBoxes Dataset \cite{youtube-bb}. O
 
 \section*{Training}
 
-We took 8000 of the images of dogs from Youtube-BoundingBoxes Dataset and did traiditional train/test split. Then we used Adam as an optimizer. \\
+We took 8000 of the images of dogs from Youtube-BoundingBoxes Dataset and did traditional train/test split. Then we used Adam as an optimizer. \\
 
 We optimized the weighted mean least squares error, as suggested in the paper \cite{yolo} \\
 
@@ -117,7 +122,7 @@ where
 $$ IOU(A, B) = \frac{ A \cap B}{A \cup B} $$
 
 \subsection*{YOLO training}
-As a feature extractor we tried to use pretrained vgg and resnet50 networks. On top of that we added 2 fully connected layers and ReLU for nonlinearity. For regularization we used dropout with $p = 0.5$. 
+As a feature extractor we tried to use pretrained vgg and resnet50 networks (documented in \cite{models}). On top of that we added 2 fully connected layers and ReLU for nonlinearity. For regularization we used dropout with $p = 0.5$. 
 
 \begin{figure}[H]
 	\begin{center}
@@ -144,6 +149,8 @@ As a result we managed to reduce test error rate down to 48\% which we found sat
 
 Although we did not achieve spectacular results, there are some interesting outcomes we noticed.
 
+Our YOLO network had a problem with overfitting. We used dropout and weight decay, but results were not satisfactory enough. YOLOv2 uses batch norm and smaller weight decay, which resulted in much better performance.
+
 Even though we trained the model on the dataset with only on dog per image, it is quite good at finding multiple dogs. If there are two or three dogs on the picture, then top 3 predictions find them. We present two examples below.
 
 
@@ -162,9 +169,9 @@ Even though we trained the model on the dataset with only on dog per image, it i
 
 We consider the failure with YOLO as our mistake. Maybe tuning the model could improve the results. However, it might have been the problem with the dataset quality as well.
 
-Using the anchor boxes int YOLO V2 significantly improves the learning. Intuitively, there are $B$ boxes in each grid cell, because we want to encourage each box to specialize to detect specific type of shape. If the model has good priors of these types, it only has to adjust the boxes, instead of learning from scratch.
+Using the anchor boxes int YOLO V2 significantly improves the learning. Intuitively, there are $B$ boxes in each grid cell, because we want to encourage each box to specialize to detect specific type of shape. If the model has good priors of these types, it only has to adjust the boxes, instead of learning from scratch. Moreover, it is worth mentioning that our network can work and learn on images of any size.
 
-\newpage
+%\newpage
 \begin{thebibliography}{9}
 
 \bibitem{yolo}
@@ -178,6 +185,9 @@ Joseph Redmon, Ali Farhadi: YOLO9000:Better, Faster, Stronger
 
 \bibitem{youtube-bb}
 \texttt{ https://research.google.com/youtube-bb/}
+
+\bibitem{models}
+\texttt{ https://pytorch.org/docs/stable/torchvision/models.html }
 
 \end{thebibliography}
 
