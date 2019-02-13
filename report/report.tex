@@ -61,14 +61,30 @@
 
 \section*{Abstract}
 
-Object detection is a very rapidly evolving deep learning area and a wide variety of methods has been developed in recent years. Many of them suffer from a computation complexity (RCNN). In this paper we revisit YOLO \cite{yolo} and YOLO 9000 \cite{yolo9000} - fast real time object detection methods. Both of them are able to detect many classes of objects, however, we limit ourselves to detecting only one class - a dog. We then compare our results with the original ones and with other methods such as RCNN and Fast RCNN.
+Object detection is a very rapidly evolving deep learning area and a wide variety of methods has been developed in recent years. Many of them suffer from a computation complexity (RCNN). In this paper we revisit YOLO \cite{yolo} and YOLO v2 (introduced in YOLO9000 paper \cite{yolo9000}) - fast real time object detection methods. Both of them are able to detect many classes of objects, however, we limit ourselves to detecting only one class - a dog. We then compare our results with the original ones and with other methods such as RCNN and Fast RCNN.
 
 \section*{YOLO}
 
 The YOLO method states detection as a linear regression problem straight from pixels to bounding boxes coordinates and class probabilities. The system divides image into $ S \times S $ grid. If the center of an object falls into a grid cell, that grid cell is responsible for detecting that object. Each grid cell can predict $B$ bounding boxes. Each bounding box consists of five predictions: $x, y, w, h$ and confidence, where the first four describe the bounding box location and size. The last parameter describes how confident the model is that the bounding box contains the object. Overall the YOLO architecture takes the image, passes it through convolutional and fully connected layers and produces $S \times S \times (B \cdot  5 + C)$ predictions. Each $B \cdot 5 + C$ segment represents the predictions for the grid cell. Five parameters described above for each bounding box and C class probabilities. The original paper \cite{yolo} provides more detailed description.
-\section*{YOLO 9000}
 
-TODO 
+\section*{YOLO v2}
+
+The YOLO v2 is in fact the basic YOLO with several improvements. For example, the use of batch normalization on all convolutional layers in YOLO not only eliminates the need for other forms of regularisation, but also results in $2\%$ improvement in mAP. Further changes include higher resolution classifier (denser grid), use of anchor boxes and direct location prediction. \\
+The last improvement is very useful for dealing with initial instability. In region proposal networks the network predicts values $t_x$ and $t_y$ and the $(x,y)$ center coordinates are calculated as
+$$ x := (t_x \cdot w_a)-x_a $$
+$$ y := (t_y \cdot h_a)-y_a $$
+Since this formulation is unconstrained, any anchor box can end up at any point in the image. To overcome this drawback, we bound the location using logistic activation $\sigma$, which makes the value fall between $0$ to $1$:
+\begin{equation}
+\begin{aligned}
+b_x &:= \sigma(t_x) + c_x \\
+b_y &:= \sigma(t_y) + c_y \\
+b_w &:= p_w \cdot e^{t_w} \\
+b_h &:= p_h \cdot e^{t_h} \\
+\end{aligned}
+\end{equation}
+Where: [TODO obrazek]
+This technique results in $5\%$ increase in mAP over the version of anchor boxes.
+\\ More detailed description is available in the paper.
 
 \section*{Dataset}
 We decided to use a subset of Youtube-BoundingBoxes Dataset \cite{youtube-bb}. One can find there more than 200000 frames with dogs. The biggest disadvantage of this dataset is that only one object is detected in every frame. This can lead to some troubles with learning the model. The other problem is that some bounding boxes are set incorrectly. However, this can reduce overfitting during learning.
@@ -115,7 +131,7 @@ As a feature extractor we tried to use pretrained vgg and resnet50 networks. On 
 
 We managed to train the network down to 25\% train error rate. However the test error rate has never been smaller than 65\%. We tried different configurations of hyperparameters, adding noise to input values and data augmentation, yet it did not improve the results. We decided to abandon the YOLO approach and move to the YOLO 9000.
 
-\subsection*{YOLO 9000}
+\subsection*{YOLO 2}
 
 \section*{Comparison with other methods}
 
