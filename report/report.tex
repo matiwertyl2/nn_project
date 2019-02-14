@@ -86,13 +86,18 @@ b_w &:= p_w \cdot e^{t_w} \\
 b_h &:= p_h \cdot e^{t_h} \\
 \end{aligned}
 \end{equation}
-Where: [TODO obrazek]
+according to \textbf{Figure 1}.\\
+\begin{figure}
+\centering
+\includegraphics[scale=0.25]{scheme.png}
+\caption{Direct location prediction.}
+\end{figure}
 This technique results in $5\%$ increase in mAP over the version of anchor boxes.
 \\ More detailed description is available in the paper.
 
 \section*{Dataset}
 We decided to use a subset of Youtube-BoundingBoxes Dataset \cite{youtube-bb}. One can find there more than 200000 frames with dogs. The biggest disadvantage of this dataset is that only one object is detected in every frame. This can lead to some troubles with learning the model. The other problem is that some bounding boxes are set incorrectly. However, this can reduce overfitting during learning.
-Furthermore, we employed data augmentation, namely random translations (up to 25 px) and random rotations (up to 25 degrees).
+Furthermore, we employed data augumentation, namely random translations (up to 25 px) and random rotations (up to 25 degrees).
 
 \begin{figure}[H]
 
@@ -169,7 +174,7 @@ Even though we trained the model on the dataset with only on dog per image, it i
 
 We consider the failure with YOLO as our mistake. Maybe tuning the model could improve the results. However, it might have been the problem with the dataset quality as well.
 
-Using the anchor boxes int YOLO V2 significantly improves the learning. Intuitively, there are $B$ boxes in each grid cell, because we want to encourage each box to specialize to detect specific type of shape. If the model has good priors of these types, it only has to adjust the boxes, instead of learning from scratch. Moreover, it is worth mentioning that our network can work and learn on images of any size.
+Using the anchor boxes int YOLO V2 significantly improves the learning. Intuitively, there are $B$ boxes in each grid cell, because we want to encourage each box to specialize to detect specific type of shape. If the model has good priors of these types, it only has to adjust the boxes, instead of learning from scratch. Moreover, it is worth mentioning that our network can work and learn on images of any size. \\
 
 %\newpage
 \begin{thebibliography}{9}
